@@ -1,0 +1,62 @@
+---
+title: "Texas High Schooleres With Obesity or Overweight by Race/Ethnicity, 2021"
+author: "Kaitlan Wong"
+format: html
+editor: visual
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(readxl)
+```
+
+```{r}
+# Read the Excel file
+data <- read_excel("C:/Users/kaitl/Documents/Every Texan/R/ADA/YRBS/YRBS Obesity by Race Ethnicity 2021.xlsx")
+
+# Print the first few rows of the data frame
+head(data)
+```
+
+```{r}
+# Convert disease rate variable to numeric
+data$Percent <- as.numeric(data$Percent)
+
+
+# Load the required packages
+library(ggplot2)
+library(scales)
+
+# Create a double bar chart with rounded labels, percentages, and percent signs on the x-axis labels
+data$`Race/Ethnicity` <- factor(data$`Race/Ethnicity`, levels = c("Total", "Multiracial, non-Hispanic", "White, non-Hispanic", "Hispanic/Latino", "Black, non-Hispanic", "Asian, non-Hispanic"))
+
+double_bar_chart <- ggplot(data, aes(x = Percent * 100, y = `Race/Ethnicity`, fill = `Health Condition`)) +
+  geom_bar(stat = "identity", position = "dodge", width = 0.7) +
+  geom_text(aes(label = paste0(round(Percent * 100), "%")), position = position_dodge2(width = 0.7, preserve = "single"), hjust = 1, size = 3) +  # Adjust hjust to position labels horizontally
+  labs(
+    x = NULL,  # Remove the x-axis title
+    y = "Race/Ethnicity",
+    fill = NULL,  # Remove the legend title
+    title = "Texas High Schoolers with Obesity or Overweight by\n Race/Ethnicity in 2021",
+    caption = " Every Texan analysis of 2021 Youth Risk Behavior Survey data."
+  ) +
+  theme_minimal() +
+  theme(
+    legend.position = "top",  # Place the legend at the top
+    axis.text.x = element_text(hjust = 0.5),  # Center x-axis labels
+  ) +
+  scale_x_continuous(labels = scales::percent_format(scale = 1)) + # Add percent signs to x-axis labels
+  scale_fill_manual(values = c("Obesity" = "#009E73", "Overweight" = "#CC79A7"))  # Set custom colors for bars
+
+# Display the double bar chart with rounded labels, percentages, and adjusted horizontal positioning
+print(double_bar_chart)
+
+
+
+
+
+# Save the graph as an image
+ggsave("Obesity overweight by race eth 2021.png", width = 10, height = 6, units = "in")
+
+```
